@@ -38,7 +38,7 @@ jobs:
   docker_build_and_deploy:
     needs: build_and_test_backend  # Only run deploy if the backend build is successful
     runs-on: ubuntu-latest
-    if: success()  # Deploy only if all previous jobs were successful
+    if: success()
 
     steps:
       - name: Check out repository
