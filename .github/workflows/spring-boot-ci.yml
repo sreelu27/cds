@@ -1,0 +1,67 @@
+name: CI/CD for Spring Boot API with Docker
+
+on:
+  push:
+    branches:
+      - dev  # Trigger workflow only on pushes to the dev branch
+  pull_request:
+    branches:
+      - dev  # Trigger workflow for pull requests to dev branch
+
+jobs:
+  # Job 1: Build and Test Backend
+  build_and_test_backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('cds/cds-backend/**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build with Maven
+        run: mvn clean install --no-transfer-progress
+        working-directory: cds/cds-cds-backend  # Ensure Maven runs in the backend directory
+
+      - name: Run Tests
+        run: mvn test
+        working-directory: cds/cds-backend  # Ensure Maven test command runs in the backend directory
+
+  # Job 2: Docker Build, Push to Docker Hub, and Deploy
+  docker_build_and_deploy:
+    needs: build_and_test_backend  # Only run deploy if the backend build is successful
+    runs-on: ubuntu-latest
+    if: success()  # Deploy only if all previous jobs were successful
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: docker build -t sree27/cds-backend:latest .
+        working-directory: cds/cds-backend  # Build Docker image in the backend directory
+
+      - name: Push Docker image to Docker Hub
+        run: docker push sree27/cds-backend:latest
+        working-directory: cds/cds-backend  # Push the image to Docker Hub
+
