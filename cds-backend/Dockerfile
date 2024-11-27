@@ -5,11 +5,11 @@ FROM openjdk:17-jdk-slim as build
 WORKDIR /app
 
 # Copy the Maven build file and download dependencies (this helps caching dependencies)
-COPY cds-backend/pom.xml /app/
-RUN mvn dependency:go-offline
+COPY pom.xml /app/
+
 
 # Copy the whole backend source code and build the application
-COPY cds-backend/src /app/src
+COPY src /app/src
 RUN mvn clean package -DskipTests
 
 # Stage 2: Create the final image
