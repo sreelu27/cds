@@ -4,9 +4,12 @@ FROM openjdk:17-jdk-slim as build
 # Set the working directory inside the container
 WORKDIR /app
 
+# Install Maven (needed for building the project)
+RUN apt-get update && apt-get install -y maven
+
 # Copy the Maven build file and download dependencies (this helps caching dependencies)
 COPY pom.xml /app/
-
+RUN mvn dependency:go-offline
 
 # Copy the whole backend source code and build the application
 COPY src /app/src
