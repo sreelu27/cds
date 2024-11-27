@@ -60,4 +60,3 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: docker push sree27/cds-backend:latest
         working-directory: cds-backend  # Push the image to Docker Hub
-
