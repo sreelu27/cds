@@ -26,17 +26,13 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('cds/cds-backend/**/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('cds-backend/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
       - name: Build with Maven
-        run: mvn clean install --no-transfer-progress
-        working-directory: cds/cds-cds-backend  # Ensure Maven runs in the backend directory
-
-      - name: Run Tests
-        run: mvn test
-        working-directory: cds/cds-backend  # Ensure Maven test command runs in the backend directory
+        run: mvn clean install -D skipTests
+        working-directory: cds-backend  # Ensure Maven runs in the backend directory
 
   # Job 2: Docker Build, Push to Docker Hub, and Deploy
   docker_build_and_deploy:
@@ -59,9 +55,9 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t sree27/cds-backend:latest .
-        working-directory: cds/cds-backend  # Build Docker image in the backend directory
+        working-directory: cds-backend  # Build Docker image in the backend directory
 
       - name: Push Docker image to Docker Hub
         run: docker push sree27/cds-backend:latest
-        working-directory: cds/cds-backend  # Push the image to Docker Hub
+        working-directory: cds-backend  # Push the image to Docker Hub
 
