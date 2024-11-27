@@ -4,6 +4,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/CDS/cds-backend/pom.xml" />
+        <option value="$PROJECT_DIR$/cds-backend/pom.xml" />
       </list>
     </option>
   </component>
