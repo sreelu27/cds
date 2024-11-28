@@ -14,6 +14,7 @@ services:
       - app-network
 
   app:
+    image: cds-backend
     build:
       context: .  # Docker will build the image from the current directory
     environment:
