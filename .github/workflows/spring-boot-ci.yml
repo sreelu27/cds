@@ -60,7 +60,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           # Build the Docker images using Docker Compose
-          docker compose -f docker-compose.yml build
+          docker compose -f cds-backend/docker-compose.yml build
 
           # Tag the Docker image
           docker tag myapp-container:latest sree27/cds-backend:latest
@@ -68,8 +68,4 @@ jobs:
           # Push the Docker image to Docker Hub
           docker push sree27/cds-backend:latest
 
-      # Optional: Deploy or run Docker Compose services
-      - name: Deploy containers with Docker Compose
-        run: |
-          docker compose -f docker-compose.yml up -d
-  
+
