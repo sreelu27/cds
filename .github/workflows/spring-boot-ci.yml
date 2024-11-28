@@ -69,8 +69,3 @@ jobs:
         
          # Push the image to Docker Hub
           docker push sree27/myapp:latest
-
-      # Optional: Clean up (stop and remove containers after the workflow finishes)
-      - name: Stop and remove Docker containers
-        run: |
-          docker-compose down
