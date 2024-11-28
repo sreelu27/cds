@@ -36,28 +36,41 @@ jobs:
 
   # Job 2: Docker Build, Push to Docker Hub, and Deploy
   docker_build_and_deploy:
-    needs: build_and_test_backend  # Only run deploy if the backend build is successful
+    needs: build_and_test_backend
     runs-on: ubuntu-latest
-    if: success()  # Deploy only if all previous jobs were successful
+    if: success()
 
     steps:
+      # Step 1: Check out the repository
       - name: Check out repository
         uses: actions/checkout@v3
 
+      # Step 2: Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      # Step 3: Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker image
-        run: docker build -t sree27/cds-backend:latest .
-        working-directory: cds-backend  # Build Docker image in the backend directory
+      # Step 4: Build and push Docker image
+      - name: Build and push Docker image
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          # Build the Docker images using Docker Compose
+          docker compose -f cds-backend/docker-compose.yml build
+          
+          # Debug: List built images
+          docker images
+          
+          docker tag cds-backend:latest sree27/cds-backend:latest
 
-      - name: Push Docker image to Docker Hub
-        run: docker push sree27/cds-backend:latest
-        working-directory: cds-backend  # Push the image to Docker Hub
+          # Push the Docker image to Docker Hub
+          docker push sree27/cds-backend:latest
+
 
