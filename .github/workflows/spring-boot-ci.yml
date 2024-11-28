@@ -62,9 +62,6 @@ jobs:
           # Build the Docker images using Docker Compose
           docker compose -f cds-backend/docker-compose.yml build
 
-          # Tag the Docker image
-          docker tag myapp-container sree27/cds-backend:latest
-
           # Push the Docker image to Docker Hub
           docker push sree27/cds-backend:latest
 
