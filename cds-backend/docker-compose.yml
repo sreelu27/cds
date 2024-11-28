@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clouddata
+      MYSQL_USER: springstudent
+      MYSQL_PASSWORD: springstudent
+    ports:
+      - "3307:3306"  # Host port 3307 maps to container's MySQL port 3306
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: .  # Docker will build the image from the current directory
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/clouddata
+      SPRING_DATASOURCE_USERNAME: springstudent
+      SPRING_DATASOURCE_PASSWORD: springstudent
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}  # Reference environment variables
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"  # Port mapping for your app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

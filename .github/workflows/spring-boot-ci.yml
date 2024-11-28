@@ -53,12 +53,24 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker image
-        run: |
-          docker build -t sree27/cds-backend:latest -f cds-backend/Dockerfile cds-backend/
-          # Here, we're specifying the context to be the 'cds-backend' directory, and Docker will look for the Dockerfile inside this directory.
-        working-directory: .  # Make sure the working directory is set to root of the repository
+      # Step 4: Set up Docker Compose
+      - name: Set up Docker Compose
+        uses: docker/compose-action@v2
+        with:
+            version: 'v2'  # Make sure the working directory is set to root of the repository
 
-      - name: Push Docker image to Docker Hub
-        run: docker push sree27/cds-backend:latest
-        working-directory: .  # The working directory here is the root of the repository, since Docker push can be done from the root.
+      - name: Build and push Docker image
+        run: |
+        # Build the Docker images using Docker Compose
+          docker-compose -f docker-compose.yml build
+        
+        # Tag the image with your Docker Hub username and repository name
+          docker tag myapp-container:latest sree27/cds-backend:latest
+        
+        # Push the image to Docker Hub
+          docker push sree27/myapp:latest
+
+      # Optional: Clean up (stop and remove containers after the workflow finishes)
+      - name: Stop and remove Docker containers
+        run: |
+          docker-compose down
